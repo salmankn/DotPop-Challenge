@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DotPop Challenge - Connect Dots, Solve Puzzles!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; overflow-x: hidden; }
+
+        /* Animated background dots */
+        .bg-dots { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; }
+        .bg-dot { position: absolute; border-radius: 50%; opacity: 0.1; animation: float 10s infinite ease-in-out; }
+        .bg-dot:nth-child(1) { width: 24px; height: 24px; background: #4facfe; top: 8%; left: 8%; animation-delay: 0s; }
+        .bg-dot:nth-child(2) { width: 16px; height: 16px; background: #00f2fe; top: 18%; right: 15%; animation-delay: 1.5s; }
+        .bg-dot:nth-child(3) { width: 20px; height: 20px; background: #a855f7; bottom: 25%; left: 12%; animation-delay: 3s; }
+        .bg-dot:nth-child(4) { width: 14px; height: 14px; background: #f472b6; bottom: 12%; right: 20%; animation-delay: 2s; }
+        .bg-dot:nth-child(5) { width: 18px; height: 18px; background: #4facfe; top: 45%; left: 65%; animation-delay: 4.5s; }
+        .bg-dot:nth-child(6) { width: 12px; height: 12px; background: #00f2fe; top: 65%; left: 85%; animation-delay: 1s; }
+        .bg-dot:nth-child(7) { width: 26px; height: 26px; background: #a855f7; top: 4%; left: 45%; animation-delay: 0.8s; }
+        .bg-dot:nth-child(8) { width: 10px; height: 10px; background: #f472b6; top: 75%; left: 35%; animation-delay: 5.5s; }
+        .bg-dot:nth-child(9) { width: 22px; height: 22px; background: #4facfe; bottom: 45%; right: 8%; animation-delay: 2.5s; }
+        .bg-dot:nth-child(10) { width: 8px; height: 8px; background: #00f2fe; top: 50%; left: 25%; animation-delay: 4s; }
+        @keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-25px) scale(1.15); } }
+
+        .container { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+        /* Nav */
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; max-width: 800px; margin: 0 auto; position: relative; z-index: 2; }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo .icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .nav-logo span { font-weight: 700; color: #eee; font-size: 1.1rem; }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-links a { color: #aaa; text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 8px 16px; border-radius: 10px; transition: all 0.2s; }
+        .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+        /* Hero */
+        .hero { text-align: center; padding: 60px 20px 40px; }
+        .hero-icon { width: 110px; height: 110px; border-radius: 28px; background: linear-gradient(135deg, #4facfe, #00f2fe, #a855f7); margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 40px rgba(79, 172, 254, 0.3); animation: pulse-glow 3s infinite; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 12px 40px rgba(79, 172, 254, 0.3); } 50% { box-shadow: 0 12px 56px rgba(79, 172, 254, 0.5); } }
+        .hero-icon span { font-size: 3.4rem; line-height: 1; }
+        .hero h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -0.5px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 40%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+        .hero p { color: #999; font-size: 1.15rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+        .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .cta-btn { padding: 14px 32px; border-radius: 14px; text-decoration: none; font-size: 1rem; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .cta-btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #1a1a2e; box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3); }
+        .btn-primary:hover { box-shadow: 0 6px 28px rgba(79, 172, 254, 0.5); }
+        .btn-outline { border: 1.5px solid rgba(255,255,255,0.15); color: #ccc; background: rgba(255,255,255,0.04); }
+        .btn-outline:hover { border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.08); }
+
+        /* Features */
+        .section { padding: 60px 0; }
+        .section-title { text-align: center; font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .section-sub { text-align: center; color: #888; font-size: 1rem; margin-bottom: 36px; }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .feature-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 28px 20px; text-align: center; transition: all 0.3s; }
+        .feature-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(79, 172, 254, 0.2); transform: translateY(-4px); }
+        .feature-card .icon { font-size: 2.4rem; margin-bottom: 12px; }
+        .feature-card h3 { font-size: 1.05rem; font-weight: 700; color: #eee; margin-bottom: 6px; }
+        .feature-card p { font-size: 0.88rem; color: #888; line-height: 1.5; }
+
+        /* About section */
+        .about-content { max-width: 600px; margin: 0 auto; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 40px 32px; }
+        .about-content p { color: #aaa; line-height: 1.8; font-size: 1rem; margin-bottom: 16px; }
+        .about-stats { display: flex; justify-content: center; gap: 40px; margin-top: 24px; }
+        .stat { text-align: center; }
+        .stat .num { font-size: 1.8rem; font-weight: 800; color: #4facfe; }
+        .stat .label { font-size: 0.82rem; color: #888; }
+
+        /* Screenshots placeholder */
+        .screenshots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .screenshot-card { aspect-ratio: 9/16; background: linear-gradient(145deg, rgba(79,172,254,0.08), rgba(168,85,247,0.08)); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 2.5rem; }
+        .screenshot-card span { font-size: 0.82rem; margin-top: 8px; }
+
+        /* Footer */
+        .footer-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; padding: 32px 0; }
+        .footer-links a { color: #666; text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+        .footer-links a:hover { color: #4facfe; }
+        footer .copyright { text-align: center; color: #555; font-size: 0.82rem; padding-bottom: 32px; }
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 2.2rem; }
+            .features-grid, .screenshots { grid-template-columns: 1fr; }
+            .about-stats { gap: 24px; flex-wrap: wrap; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-dots">
+        <div class="bg-dot"></div><div class="bg-dot"></div><div class="bg-dot"></div>
+        <div class="bg-dot"></div><div class="bg-dot"></div><div class="bg-dot"></div>
+        <div class="bg-dot"></div><div class="bg-dot"></div><div class="bg-dot"></div>
+        <div class="bg-dot"></div>
+    </div>
+
+    <nav>
+        <a href="#" class="nav-logo">
+            <div class="icon"><span>&#x25CF;</span></div>
+            <span>DotPop</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-icon"><span>&#x25CF;</span></div>
+            <h1>DotPop Challenge</h1>
+            <p>Connect colorful dots, trigger explosive combos, and conquer 100+ brain-teasing puzzles in this addictive Two Dots-style game!</p>
+            <div class="cta-buttons">
+                <a href="#" class="cta-btn btn-primary">&#x1F3AE; Play Now</a>
+                <a href="#about" class="cta-btn btn-outline">Learn More</a>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section id="features" class="section">
+            <h2 class="section-title">Game Features</h2>
+            <p class="section-sub">Everything you need for endless fun</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon">&#x1F7E6;</div>
+                    <h3>Colorful Dots</h3>
+                    <p>Connect matching dots across the board. The more you connect, the higher your score!</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#x1F4A5;</div>
+                    <h3>Power-Ups</h3>
+                    <p>Use bombs, row clears, and color changers to blast through tricky puzzles.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#x1F3AF;</div>
+                    <h3>100+ Levels</h3>
+                    <p>Progress through increasingly challenging levels with unique objectives.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#x1F31F;</div>
+                    <h3>Square Bonuses</h3>
+                    <p>Form square patterns to clear all dots of the same color instantly!</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#x1F504;</div>
+                    <h3>Endless Mode</h3>
+                    <p>No limits! Play as long as you can and compete for the highest score.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#x1F4CA;</div>
+                    <h3>Daily Challenges</h3>
+                    <p>New puzzle every day. Complete them all to earn achievements and rewards.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screenshots -->
+        <section class="section">
+            <h2 class="section-title">Screenshots</h2>
+            <p class="section-sub">See the game in action</p>
+            <div class="screenshots">
+                <div class="screenshot-card">&#x1F7E6;<span>Game Board</span></div>
+                <div class="screenshot-card">&#x2B50;<span>Level Select</span></div>
+                <div class="screenshot-card">&#x1F3C6;<span>Achievements</span></div>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about" class="section">
+            <h2 class="section-title">About DotPop Challenge</h2>
+            <p class="section-sub">The story behind the game</p>
+            <div class="about-content">
+                <p>DotPop Challenge is a fun and addictive puzzle game inspired by the classic Two Dots gameplay. Swipe to connect matching dots, create squares for massive chain reactions, and use powerful boosters to overcome tough challenges.</p>
+                <p>With 100+ handcrafted levels, an endless mode for unlimited play, and daily challenges to keep you coming back, DotPop Challenge is the perfect brain teaser for puzzle lovers of all ages.</p>
+                <p>Track your stats, unlock achievements, earn coins, and climb the leaderboard. Compete with yourself and become the ultimate DotPop master!</p>
+                <div class="about-stats">
+                    <div class="stat"><div class="num">100+</div><div class="label">Levels</div></div>
+                    <div class="stat"><div class="num">5</div><div class="label">Power-Ups</div></div>
+                    <div class="stat"><div class="num">20+</div><div class="label">Achievements</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="mailto:support@dotpopchallenge.app">Contact</a>
+        </div>
+        <footer>
+            <p class="copyright">&copy; 2026 DotPop Challenge. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
